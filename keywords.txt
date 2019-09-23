@@ -1,0 +1,29 @@
+#######################################
+# Syntax Coloring Map For Sodaq_R4X_MQTT
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+MQTT	KEYWORD1
+Soda_R4X_MQTT	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+openMQTT	KEYWORD2
+closeMQTT	KEYWORD2
+sendMQTTPacket	KEYWORD2
+receiveMQTTPacket	KEYWORD2
+availableMQTTPacket KEYWORD2
+isAliveMQTT KEYWORD2
+setMQTTClosedHandler    KEYWORD2
+
+#######################################
+# Instances (KEYWORD3)
+#######################################
+
+#######################################
+# Constants (LITERAL1)
+#######################################
