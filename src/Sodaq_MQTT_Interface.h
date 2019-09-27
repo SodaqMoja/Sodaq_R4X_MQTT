@@ -22,6 +22,9 @@
 #ifndef SODAQ_MQTT_INTERFACE_H_
 #define SODAQ_MQTT_INTERFACE_H_
 
+#include <stdint.h>
+#include <stdlib.h>
+
 class Sodaq_MQTT_Interface
 {
 public:
