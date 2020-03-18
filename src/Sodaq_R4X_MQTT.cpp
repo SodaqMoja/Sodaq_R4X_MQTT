@@ -98,13 +98,21 @@ bool Sodaq_R4X_MQTT::sendMQTTPacket(uint8_t* pckt, size_t pckt_len)
 
 size_t Sodaq_R4X_MQTT::receiveMQTTPacket(uint8_t * pckt, size_t size, uint32_t timeout)
 {
+    size_t retval = 0;
+
     if (isAliveMQTT()) {
         if (_r4xInstance->socketWaitForRead(_socketID, timeout)) {
-            return _r4xInstance->socketRead(_socketID, pckt, size);
+            retval = _r4xInstance->socketRead(_socketID, pckt, size);
+            if (retval == 0) {
+                // debugPrintln("[R4X MQTT sendMQTTPacket] socketRead returned 0");
+            }
+        }
+        else {
+            debugPrintln("[R4X MQTT sendMQTTPacket] socketWaitForRead failed");
         }
     }
 
-    return 0;
+    return retval;
 }
 
 size_t Sodaq_R4X_MQTT::availableMQTTPacket()
