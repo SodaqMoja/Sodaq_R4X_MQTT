@@ -77,16 +77,19 @@ bool Sodaq_R4X_MQTT::sendMQTTPacket(uint8_t* pckt, size_t pckt_len)
 
     if (isAliveMQTT()) {
         //_r4xInstance->execCommand("AT+USOGO=0,65535,8");
-        if (_r4xInstance->socketWrite(_socketID, pckt, pckt_len) > 0) {
-            if (_r4xInstance->socketFlush(_socketID)) {
+        /*
+         * First flush out the previous (if any)
+         */
+        if (_r4xInstance->socketFlush(_socketID)) {
+            if (_r4xInstance->socketWrite(_socketID, pckt, pckt_len) > 0) {
                 retval = true;
             }
             else {
-                debugPrintln("[R4X MQTT sendMQTTPacket] socketFlush failed");
+                debugPrintln("[R4X MQTT sendMQTTPacket] socketWrite failed");
             }
         }
         else {
-            debugPrintln("[R4X MQTT sendMQTTPacket] socketWrite failed");
+            debugPrintln("[R4X MQTT sendMQTTPacket] socketFlush failed");
         }
     }
     else {
