@@ -117,12 +117,14 @@ size_t Sodaq_R4X_MQTT::receiveMQTTPacket(uint8_t * pckt, size_t size, uint32_t t
 
 size_t Sodaq_R4X_MQTT::availableMQTTPacket()
 {
+    size_t retval = 0;
+
     if (isAliveMQTT()) {
-        _r4xInstance->mqttLoop();
-        return _r4xInstance->socketGetPendingBytes(_socketID);
+        (void)_r4xInstance->mqttLoop();
+        retval = _r4xInstance->socketGetPendingBytes(_socketID);
     }
 
-    return 0;
+    return retval;
 }
 
 bool Sodaq_R4X_MQTT::isAliveMQTT()
