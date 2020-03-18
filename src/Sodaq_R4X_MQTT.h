@@ -41,11 +41,18 @@ public:
     bool isAliveMQTT();
     void setMQTTClosedHandler(void (*handler)(void));
 
+    // Sets the optional "Diagnostics and Debug" print.
+    void setDiag(Print &print) { _diagPrint = &print; }
+    void setDiag(Print *print) { _diagPrint = print; }
+
 private:
     Sodaq_R4X* _r4xInstance = NULL;
     int8_t _socketID = -1;
 
     bool (*_r4xConnectHandler)(void);
+
+    // The (optional) stream to show debug information.
+    Print* _diagPrint;
 };
 
 #endif // Sodaq_R4X_MQTT_H
