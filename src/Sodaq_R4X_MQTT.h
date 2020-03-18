@@ -29,6 +29,8 @@
 
 class Sodaq_R4X_MQTT : public Sodaq_MQTT_Interface {
 public:
+    virtual ~Sodaq_R4X_MQTT() {}
+
     // Set R4X instance
     void setR4Xinstance(Sodaq_R4X* r4xInstance, bool (*r4xConnectHandler)(void));
 
