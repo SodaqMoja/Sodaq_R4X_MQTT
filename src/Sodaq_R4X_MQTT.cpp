@@ -20,6 +20,17 @@
 
 #include "Sodaq_R4X_MQTT.h"
 
+#define DEBUG
+
+#ifdef DEBUG
+#define debugPrint(...)   { if (_diagPrint) _diagPrint->print(__VA_ARGS__); }
+#define debugPrintln(...) { if (_diagPrint) _diagPrint->println(__VA_ARGS__); }
+#warning "Debug mode is ON"
+#else
+#define debugPrint(...)
+#define debugPrintln(...)
+#endif
+
 void Sodaq_R4X_MQTT::setR4Xinstance(Sodaq_R4X* r4xInstance, bool (*r4xConnectHandler)(void))
 {
     _r4xInstance = r4xInstance;
@@ -62,34 +73,61 @@ bool Sodaq_R4X_MQTT::closeMQTT(bool switchOff)
 
 bool Sodaq_R4X_MQTT::sendMQTTPacket(uint8_t* pckt, size_t pckt_len)
 {
+    bool retval = false;
+
     if (isAliveMQTT()) {
         //_r4xInstance->execCommand("AT+USOGO=0,65535,8");
-        return ((_r4xInstance->socketWrite(_socketID, pckt, pckt_len) > 0)
-            && (_r4xInstance->socketFlush(_socketID)));
+        /*
+         * First flush out the previous (if any)
+         */
+        if (_r4xInstance->socketFlush(_socketID)) {
+            if (_r4xInstance->socketWrite(_socketID, pckt, pckt_len) > 0) {
+                retval = true;
+            }
+            else {
+                debugPrintln("[R4X MQTT sendMQTTPacket] socketWrite failed");
+            }
+        }
+        else {
+            debugPrintln("[R4X MQTT sendMQTTPacket] socketFlush failed");
+        }
+    }
+    else {
+        debugPrintln("[R4X MQTT sendMQTTPacket] not alive");
     }
 
-    return false;
+    return retval;
 }
 
 size_t Sodaq_R4X_MQTT::receiveMQTTPacket(uint8_t * pckt, size_t size, uint32_t timeout)
 {
+    size_t retval = 0;
+
     if (isAliveMQTT()) {
         if (_r4xInstance->socketWaitForRead(_socketID, timeout)) {
-            return _r4xInstance->socketRead(_socketID, pckt, size);
+            retval = _r4xInstance->socketRead(_socketID, pckt, size);
+            if (retval == 0) {
+                // debugPrintln("[R4X MQTT sendMQTTPacket] socketRead returned 0");
+            }
+        }
+        else {
+            debugPrintln("[R4X MQTT sendMQTTPacket] socketWaitForRead failed");
         }
     }
 
-    return 0;
+    return retval;
 }
 
 size_t Sodaq_R4X_MQTT::availableMQTTPacket()
 {
+    size_t retval = 0;
+
     if (isAliveMQTT()) {
-        _r4xInstance->mqttLoop();
-        return _r4xInstance->socketGetPendingBytes(_socketID);
+        (void)_r4xInstance->mqttLoop();
+        retval = _r4xInstance->socketGetPendingBytes(_socketID);
     }
 
-    return 0;
+    return retval;
 }
 
 bool Sodaq_R4X_MQTT::isAliveMQTT()
@@ -106,4 +144,5 @@ bool Sodaq_R4X_MQTT::isAliveMQTT()
 
 void Sodaq_R4X_MQTT::setMQTTClosedHandler(void (*handler)(void)) 
 {
+    (void)handler;
 }
